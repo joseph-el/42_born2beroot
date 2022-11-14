@@ -4,83 +4,52 @@
 
 ### Step 1: Installing sudo
 
-Switch to root and its environment via : `su -`.
+Switch to root by following command:
 
 	$>su -
-	$>Password:
+	$>Password: (root password)
 
-It is advisable to install _vim_ for this tutorial, for commands that will use _vi_, use _vim_ instead.
+First one you need to install text edito (VIM) by the following  command :
 
 	$>apt-get update
 	$>apt-get install vim
 
-Install _sudo_ via `apt install sudo`.
+Install sudo via .
 
 	$>apt install sudo
 
-Verify whether _sudo_ was successfully installed via `dpkg -l | grep sudo`.
+### Step 2: Adding User to sudo Group
 
-	$>dpkg -l | grep sudo
+Add user to sudo group by following command :
 
-### Step 2: Adding User to _sudo_ Group
+	$>adduser <user> sudo
 
-Add user to _sudo_ group via `adduser <username> sudo`.
+Verify whether user was successfully 
 
-	$>adduser <username> sudo
+	$>cat /etc/group | grep sudo
 
-Alternatively, add user to sudo group via `usermod -aG sudo <username>`.
+### Step 3: Configuring sudo
 
-	$>usermod -aG sudo <username>
+Configure  sudo by :
+	$>sudo vi /etc/sudoers.d/
 
-Verify whether user was successfully added to sudo group via `getent group sudo`.
-
-	$>getent group sudo
-
-`reboot` for changes to take effect, then log in and verify `sudopowers` via `sudo -v`.
-
-	$>reboot
-
-	<--->
-	Debian GNU/Linux 10 <hostname> tty1
-
-	$><hostname> login: <username>
-	$>Password: <password>
-	<--->
-
-	$>sudo -v
-	$>[sudo] password for <username>: <password>
-
-### Step 3: Running root-Privileged Commands
-
-From here on out, run root-privileged commands via prefix `sudo`. For instance:
-
-	$>sudo apt update
-
-### Step 4: Configuring sudo
-
-Configure _sudo_ via `sudo vi /etc/sudoers.d/<filename>`. `<filename>` shall not end in `~` or contain `.`.
-
-	$>sudo vi /etc/sudoers.d/<filename>
-
-To limit authentication using sudo to 3 attempts (defaults to 3 anyway) in the event of an incorrect password, add below line to the file.
+To limit authentication using sudo to 3 attempts (defaults to 3 anyway).
 
 	Defaults        passwd_tries=3
 
-To add a custom error message in the event of an incorrect password:
+To add a custom error message for badpassword:
 
-	Defaults        badpass_message="<custom-error-message>"
+	Defaults        badpass_message="you message here"
 
-To log all _sudo_ commands to `/var/log/sudo/<filename>`:
+To log all sudo commands:
 
 	$>sudo mkdir /var/log/sudo
-	<~~~>
-	Defaults        logfile="/var/log/sudo/<filename>"
-	<~~~>
+	
+	Defaults        logfile="/var/log/sudo/sudo.log"
 
-To archive all _sudo_ inputs & outputs to `/var/log/sudo/`:
+To archive all sudo inputs & outputs :
 
 	Defaults        log_input,log_output
-	Defaults        iolog_dir="/var/log/sudo"
 
 To require TTY:
 
@@ -94,15 +63,11 @@ To set _sudo_ paths to `/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:
 
 ### Step 1: Installing & Configuring SSH
 
-Install _openssh-server_ via `sudo apt install openssh-server`.
+Install openssh-server.
 
 	$>sudo apt install openssh-server
 
-Verify whether openssh-server was successfully installed via `dpkg -l | grep ssh`.
-
-	$>dpkg -l | grep ssh
-
-Configure SSH via `sudo vi /etc/ssh/sshd_config`.
+Configure SSH via :
 
 	$>sudo vi /etc/ssh/sshd_config
 
@@ -114,7 +79,7 @@ with:
 
 	line15 Port 4242
 
-To disable SSH login as root irregardless of authentication mechanism, replace below line
+To disable SSH login as root ,replace below line
 
 	line34 #PermitRootLogin prohibit-password
 
@@ -124,7 +89,7 @@ with:
 
 Check SSH status via `sudo service ssh status`.
 
-	$>sudo service ssh status
+	$>sudo systemctl status sshd
 
 Alternatively, check SSH status via `systemctl status ssh`.
 
@@ -132,23 +97,19 @@ Alternatively, check SSH status via `systemctl status ssh`.
 
 ### Step 2: Installing & Configuring UFW
 
-Install _ufw_ via `sudo apt install ufw`.
+Install ufw :
 
-	$>sudo apt install ufw
+	$>sudo apt-get install ufw
 
-Verify whether ufw was successfully installed via `dpkg -l | grep ufw`.
-
-	$>dpkg -l | grep ufw
-
-Enable Firewall via `sudo ufw enable`.
+Enable Firewall by :
 
 	$>sudo ufw enable
 
-Allow incoming connections using Port 4242 via `sudo ufw allow 4242`.
+Allow incoming connections using Port 4242 :
 
 	$>sudo ufw allow 4242
 
-Check UFW status via `sudo ufw status`.
+Check UFW status :
 
 	$>sudo ufw status
 
@@ -156,15 +117,7 @@ Check UFW status via `sudo ufw status`.
 
 SSH into your virtual machine using Port 4242 via `ssh <username>@<ip-address> -p 4242`.
 
-	$>ssh <username>@<ip-address> -p 4242
-
-Terminate SSH session at any time via `logout`.
-
-	$>logout
-
-Alternatively, terminate SSH session via `exit`.
-
-	$>exit
+	$>ssh <your uuser here>@<ip-address> -p 4242
 
 ## User Management
 
@@ -172,7 +125,7 @@ Alternatively, terminate SSH session via `exit`.
 
 #### Password Age
 
-Configure password age policy via `sudo vi /etc/login.defs`.
+Configure password age policy
 
 	$>sudo vi /etc/login.defs
 
@@ -192,28 +145,25 @@ with:
 
 	line161 PASS_MIN_DAYS   2
 
-To send user a warning message 7 days _(defaults to 7 anyway)_ before password expiry, keep below line as is.
+To send user a warning message 7 days :
 
 	line162 PASS_WARN_AGE   7
 
 #### Password Strength
 
-Secondly, to set up policies in relation to password strength, install the _libpam-pwquality_ package.
+Secondly, to set up policies in relation to password strength :
 
 	$>sudo apt install libpam-pwquality
 
-Verify whether _libpam-pwquality_ was successfully installed via `dpkg -l | grep libpam-pwquality`.
-
-	$>dpkg -l | grep libpam-pwquality
-
-Configure password strength policy via `sudo vi /etc/pam.d/common-password`, specifically the below line:
+Configure password strength policy, specifically the below line:
 
 	$>sudo vi /etc/pam.d/common-password
-	<~~~>
+	
+	add the following line :
+	
 	line25 password        requisite                       pam_pwquality.so retry=3
-	<~~~>
 
-To set password minimum length to 10 characters, add below option to the above line.
+To set password minimum length to 10 characters
 
 	minlen=10
 
@@ -233,39 +183,29 @@ To set the number of changes required in the new password from the old password 
 
 	difok=7
 
-To implement the same policy on _root_:
+To implement the same policy on root:
 
 	enforce_for_root
 
-Finally, it should look like the below:
-
-	password        requisite                       pam_pwquality.so retry=3 minlen=10 ucredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root
-
 ### Step 2: Creating a New Group
 
-Create new _user42_ group via `sudo addgroup user42`.
+Create new user42 group :
 
 	$>sudo addgroup user42
 
-Add user to _user42_ group via `sudo adduser <username> user42`.
+Add user to user42 group :
 
-	$>sudo adduser <username> user42
+	$>sudo adduser <your user> user42
 
-Alternatively, add user to _user42_ group via `sudo usermod -aG user42 <username>`.
+Verify whether user was successfully added :
 
-	$>sudo usermod -aG user42 <username>
-
-Verify whether user was successfully added to _user42_ group via `getent group user42`.
-
-	$>getent group user42
+	$>cat /etc/group | grep user42
 
 ## cron
 
 #### Setting Up a cron Job
 
-#### For this part check the monitoring.sh file
-
-Configure _cron_ as _root_ via `sudo crontab -u root -e`.
+Configure cron
 
 	$>sudo crontab -u root -e
 
@@ -275,41 +215,33 @@ To schedule a shell script to run every 10 minutes, replace below line
 
 with:
 
-	line23 */10 * * * * bash /path/to/script | wall
+	 */10 * * * * bash "path of ur script"
+	 
+For check cron (1 min \ 1 min) replace 10 by 1 like :
 
-Check root's scheduled cron jobs via `sudo crontab -u root -l`.
-
-	$>sudo crontab -u root -l
+	 */1 * * * * bash "path of ur script"
 
 # Bonus
 
-## Linux Lighttpd MariaDB PHP (LLMP) Stack
+##PART ONE
 
 ### Step 1: Installing Lighttpd
 
-Install _lighttpd_ via `sudo apt install lighttpd`.
+Install lighttpd
 
 	&>sudo apt install lighttpd
 
-Verify whether _lighttpd_ was successfully installed via `dpkg -l | grep lighttpd`.
-
-	$>dpkg -l | grep lighttpd
-
-Allow incoming connections using Port 80 via `sudo ufw allow 80`.
+Allow incoming connections using Port 80
 
 	$>sudo ufw allow 80
 
 ### Step 2: Installing & Configuring MariaDB
 
-Install _mariadb-server_ via `sudo apt install mariadb-server`.
+Install mariadb-server
 
 	$>sudo apt install mariadb-server
 
-Verify whether _mariadb-server_ was successfully installed via `dpkg -l | grep mariadb-server`.
-
-	$>dpkg -l | grep mariadb-server
-
-Start interactive script to remove insecure default settings via `sudo mysql_secure_installation`.
+Start interactive script to remove insecure default settings
 
 	$>sudo mysql_secure_installation
 	Enter current password for root (enter for none): #Just press Enter (do not confuse database root with system root)
@@ -319,28 +251,27 @@ Start interactive script to remove insecure default settings via `sudo mysql_sec
 	Remove test database and access to it? [Y/n] Y
 	Reload privilege tables now? [Y/n] Y
 
-Log in to the MariaDB console via `sudo mariadb`.
+Log in to the MariaDB console 
 
 	$>sudo mariadb
-	MariaDB [(none)]>
 
-Create new database via `CREATE DATABASE <database-name>;`.
+Create new database 
 
-	MariaDB [(none)]> CREATE DATABASE <database-name>;
+	MariaDB [(none)]> CREATE DATABASE <DATA BASE NAME>;
 
-Create new database user and grant them full privileges on the newly-created database via `GRANT ALL ON <database-name>.* TO '<username-2>'@'localhost' IDENTIFIED BY '<password-2>' WITH GRANT OPTION;`.
+Create new database user and grant them full privileges on the newly-created database
 
 	MariaDB [(none)]> GRANT ALL ON <database-name>.* TO '<username-2>'@'localhost' IDENTIFIED BY '<password-2>' WITH GRANT OPTION;
 
-Flush the privileges via `FLUSH PRIVILEGES;`.
+Flush the privileges
 
 	MariaDB [(none)]> FLUSH PRIVILEGES;
 
-Exit the MariaDB shell via `exit`.
+Exit the MariaDB shell
 
 	MariaDB [(none)]> exit
 
-Verify whether database user was successfully created by logging in to the MariaDB console via `mariadb -u <username-2> -p`.
+Verify whether database user was successfully created by logging in to the MariaDB 
 
 	$ mariadb -u <username-2> -p
 	Enter password: <password-2>
@@ -352,55 +283,39 @@ Confirm whether database user has access to the database via `SHOW DATABASES;`.
 	+--------------------+
 	| Database           |
 	+--------------------+
-	| <database-name>    |
+	| <joseph>.          |
 	| information_schema |
 	+--------------------+
 
-Exit the MariaDB shell via `exit`.
-
-	MariaDB [(none)]> exit
-
 ### Step 3: Installing PHP
 
-Install _php-cgi_ & _php-mysql_ via `sudo apt install php-cgi php-mysql`.
+Install php-cgi & php-mysql .
 
 	$>sudo apt install php-cgi php-mysql
 
-Verify whether _php-cgi_ & _php-mysql_ was successfully installed via `dpkg -l | grep php`.
-
-	$>dpkg -l | grep php
 
 ### Step 4: Downloading & Configuring WordPress
 
-Install _wget_ via `sudo apt install wget`.
+Install wget
 
 	$>sudo apt install wget
 
-Download WordPress to `/var/www/html` via `sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html`.
+Download WordPress to `/var/www/html`
 
 	$>sudo wget http://wordpress.org/latest.tar.gz -P /var/www/html
 
-Extract downloaded content via `sudo tar -xzvf /var/www/html/latest.tar.gz`.
-
+Extract downloaded content 
 	$>sudo tar -xzvf /var/www/html/latest.tar.gz
 
-Remove tarball via `sudo rm /var/www/html/latest.tar.gz`.
-
-	$>sudo rm /var/www/html/latest.tar.gz
-
-Copy content of `/var/www/html/wordpress` to `/var/www/html` via `sudo cp -r /var/www/html/wordpress/* /var/www/html`.
+Copy content of `/var/www/html/wordpress` to `/var/www/html`
 
 	$>sudo cp -r /var/www/html/wordpress/* /var/www/html
 
-Remove `/var/www/html/wordpress` via `sudo rm -rf /var/www/html/wordpress`
-
-	$>sudo rm -rf /var/www/html/wordpress
-
-Create WordPress configuration file from its sample via `sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php`.
+Create WordPress configuration file from its sample
 
 	$>sudo cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
 
-Configure WordPress to reference previously-created MariaDB database & user via `sudo vi /var/www/html/wp-config.php`.
+Configure WordPress to reference previously-created MariaDB database & user
 
 	$>sudo vi /var/www/html/wp-config.php
 
@@ -418,37 +333,32 @@ with:
 
 ### Step 5: Configuring Lighttpd
 
-Enable below modules via `sudo lighty-enable-mod fastcgi; sudo lighty-enable-mod fastcgi-php; sudo service lighttpd force-reload`.
+Enable below modules
 
 	$>sudo lighty-enable-mod fastcgi
 	$>sudo lighty-enable-mod fastcgi-php
 	$>sudo service lighttpd force-reload
 
-## 3: File Transfer Protocol (FTP)
+#PART TWO
+
+# 3: File Transfer Protocol (FTP)
 
 ### Step 1: Installing & Configuring FTP
 
-Install FTP server via `sudo apt install vsftpd`.
+Install FTP server 
 
 	$>sudo apt install vsftpd
 
-Verify whether _vsftpd_ was successfully installed via `dpkg -l | grep vsftpd`.
-
-	$>dpkg -l | grep vsftpd
-
-Install FTP client via `sudo apt install ftp`.
+Install FTP client
 
 	$>sudo apt install ftp
 
-Verify whether _ftp_ was successfully installed via `dpkg -l | grep ftp`.
-
-	$>dpkg -l | grep ftp
-
-Allow incoming connections using Port 21 via `sudo ufw allow 21`.
+Allow incoming connections using Port 21 and 20
 
 	$>sudo ufw allow 21
+	$>sudo ufw allow 20
 
-Configure _vsftpd_ via `sudo vi /etc/vsftpd.conf`.
+Configure vsftpd
 
 	$>sudo vi /etc/vsftpd.conf
 
@@ -456,19 +366,17 @@ To enable any form of FTP write command, uncomment below line:
 
 	line31 #write_enable=YES
 
-To set root folder for FTP-connected user to `/home/<username>/ftp`, add below lines:
+To set root folder for FTP-connected user 
 
 	$>sudo mkdir /home/<username>/ftp
 	$>sudo mkdir /home/<username>/ftp/files
 	$>sudo chown nobody:nogroup /home/<username>/ftp
 	$>sudo chmod a-w /home/<username>/ftp
 
-Add these lines to the top of vsftpd.conf via `sudo vi /etc/vsftpd.conf`.
+Add these lines to the top of vsftpd.conf 
 
-	<~~~>
 	user_sub_token=$USER
 	local_root=/home/$USER/ftp
-	<~~~>
 
 To prevent user from accessing files or using commands outside the directory tree, uncomment below line:
 
@@ -478,22 +386,20 @@ To whitelist FTP, add below lines:
 
 	$>sudo vi /etc/vsftpd.userlist
 
-To add your username, save and leave the file, and write the command below:
+To add your username, save and leave the file
 
 	$>echo <username> | sudo tee -a /etc/vsftpd.userlist
 
-Add these lines to the file vsftpd.userlist via `sudo vi /etc/vsftpd.userlist`.
+Add these lines to the file vsftpd.userlist
 
-	<~~~>
 	userlist_enable=YES
 	userlist_file=/etc/vsftpd.userlist
 	userlist_deny=NO
-	<~~~>
 
 ### Step 2: Connecting to Server via FTP
 
-FTP into your virtual machine via `ftp <ip-address>`.
+FTP into your virtual machine
 
-	$>ftp <ip-address>
+	$>ftp ip-address 
 
-Terminate FTP session at any time via `CTRL + D`.
+Terminate FTP session at any time by exit in FTP shell
