@@ -1,5 +1,5 @@
 <h1 align="center">
-	42 BORN_2BE_ROOT 
+	42 BORN2BE_ROOT 
 </h1>
 
 <p align="center">
