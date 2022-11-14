@@ -24,7 +24,7 @@
   
 ### Step 1: Installing sudo
 
-Switch to root by following command:
+Switch to root by the following command:
 
 	$>su -
 	$>Password: (root password)
