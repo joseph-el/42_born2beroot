@@ -9,13 +9,6 @@
 	<img alt="Code language count" src="https://img.shields.io/github/languages/count/joseph-el/42_born2beroot?color=yellow" />
 	<img alt="GitHub top language" src="https://img.shields.io/github/languages/top/joseph-el/42_born2beroot?color=blue" />
 	<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/joseph-el/42_born2beroot?color=green" />
- 
- 
-<h3 align="center">
-	<a href="#%EF%B8%8F-about">ENJOY</a>
- </h3>
- 
----
 
 ## 💡 About Project
 
